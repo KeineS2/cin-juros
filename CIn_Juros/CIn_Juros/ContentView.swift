@@ -10,8 +10,11 @@ import SwiftUI
 struct ContentView: View {
     
     @State var tipoInvestimento: Bool?
-    @State var aporteMensal: Int?
-    @State var valorInicial: Int?
+    @State var aporteMensal: Double?
+    @State var valorInicial: Double?
+    @State var totalAnos: Double?
+    @State var tempoAnos: Double?
+    @State var totalMeses: Double?
     
     @State var investimentoSelecionado1 = Data.mai
     @State var investimentoSelecionado2 = Data.jun
@@ -160,18 +163,15 @@ extension ContentView {
         let totalAnos = anoSelecionado2 - anoSelecionado1
         
         // Realiza o cálculo dos juros com base nos valores fornecidos e nos anos selecionados
-        let resultado = calcularJuros(valorInicial: valorInicial, aporteMensal: aporteMensal, totalAnos: totalAnos)
+        let resultado = tipoDeInvestimento.calcularJuros(deValorInicial: valorInicial, eAporteMensal: aporteMensal, eTotalAnos: Double(totalAnos), eTotalMeses: Double(totalAnos))
+//        calcularJuros(valorInicial: valorInicial, aporteMensal: aporteMensal, totalAnos: totalAnos)
         
         print("Resultado do investimento: \(resultado)")
     }
     
     // Função para calcular os juros com base nos valores fornecidos
-    func calcularJuros(valorInicial: Int, aporteMensal: Int, totalAnos: Int) -> Double {
+    func calcularJuros(valorInicial: Int, aporteMensal: Int, totalAnos: Int, totalMeses: Double) -> Double {
         
-        // Aqui você pode implementar a lógica para calcular os juros com base nos valores fornecidos
-        // Por exemplo, você pode usar as fórmulas de juros compostos que discutimos anteriormente nesta conversa
-        
-        // Por enquanto, apenas retornaremos um valor de exemplo
         return 1  }
 }
 
