@@ -7,44 +7,39 @@
 
 import Foundation
 
-enum investimento: String, CaseIterable{
+enum investimento: String, CaseIterable {
     case selic = "Tesouro Selic"
     case prefixado = "Tesouro Prefixado"
     case ipca = "Tesouro IPCA+"
     case fundos = "Fundos Imobiliários"
     
-    func calcularJurosSelic (deValorInicial valorInicialSelic: Int, eAporteMensal aporteMensal: Int) -> Int{
-        
-        let resultado: Double
-        let r: Double
-        let n: Double
-        let valorCorrigido: Double
-        let valorCota: Double
-        let jurosCota: Double
-        let valorInicial: Double
-        let variacaoIpca: Double
-        let taxaJuros: Double
-        let t: Double
-        
+    func calcularJuros(deValorInicial valorInicial: Double, eAporteMensal aporteMensal: Double) -> Double {
         switch self {
         case .selic:
-            r = 0.05
-            n = 252
+            let r = 0.05
+            let n = 252
+            let t = 1
+            let valorFinal = valorInicial * pow((1 + r / Double(n)), Double(n * t))
+            return valorFinal
         case .prefixado:
-            r = 0.08
+            let r = 0.08
+            let n = 1 // Considerando um ano
+            let t = 1
+            let valorFinal = valorInicial * pow((1 + r), Double(n * t))
+            return valorFinal
         case .ipca:
-            valorCorrigido = Double(valorInicial * (1 + variacaoIpca))
-            variacaoIpca = 0.05
-            taxaJuros = 0.06
+            let variacaoIpca = 0.05
+            let taxaJuros = 0.06
+            let valorCorrigido = valorInicial * (1 + variacaoIpca)
+            let t = 1
+            let valorFinal = valorCorrigido * pow((1 + taxaJuros), Double(t))
+            return valorFinal
         case .fundos:
-            valorCota = 10
-            jurosCota = 0.1
+            let valorCota = 10.0
+            let jurosCota = 0.1
+            let t = 1
+            let valorFinal = valorInicial * (1 + jurosCota) * Double(t) + aporteMensal
+            return valorFinal
         }
-        
-        let resultado = valorInicialSelic * (1 + r / n) * n * t
-        
-        return resultado
-        
     }
-    
 }

@@ -13,11 +13,15 @@ struct ContentView: View {
     @State var aporteMensal: Int?
     @State var valorInicial: Int?
     
-    @State var investimentoSelecionado1 = Data.jan
-    @State var investimentoSelecionado2 = Data.fev
+    @State var investimentoSelecionado1 = Data.mai
+    @State var investimentoSelecionado2 = Data.jun
     @State var anoSelecionado1: Int = 2024
     @State var anoSelecionado2: Int = 2024
+    @State var failedInput = false
     @State var tipoDeInvestimento = investimento.selic
+    
+    let tituloPreencherCampos = "Preencha os campos para calcular!"
+    let campoMaiorQueZero = "Pelo menos um dos campos tem que ser maior que zero."
     
     var body: some View {
         NavigationStack {
@@ -34,15 +38,15 @@ struct ContentView: View {
                     
                     Spacer()
                     
-                    Text("Quanto será o aporte mensal?")
+                    Text("Qual o valor inicial?")
                     TextField("Digite o valor inicial",
-                              value: $aporteMensal,
+                              value: $valorInicial,
                               format: .number)
                     
                     Spacer()
                     
-                    Text("Qual o valor inicial?")
-                    TextField("Digite o valor inicial",
+                    Text("Qual o valor do aposte mensal?")
+                    TextField("Digite o valor do aporte mensal",
                               value: $aporteMensal,
                               format: .number)
                     Spacer()
@@ -95,7 +99,7 @@ struct ContentView: View {
                         
                         
                         Button("Calcular", action: {
-                            print("Botão foi clicado")
+                            processaCalculo()
                         })
                         .frame(height: 41)
                         .frame(maxWidth: .infinity)
@@ -117,6 +121,13 @@ struct ContentView: View {
             .containerRelativeFrame(.vertical)
             //  .animation(.easeInOut.speed(0.5), value: result)
             
+            .alert(tituloPreencherCampos, isPresented: $failedInput, actions: {
+                Button("Ok", role: .cancel, action: {})
+            })
+            .alert(campoMaiorQueZero, isPresented: $failedInput, actions: {
+                Button("Ok", role: .cancel, action: {})
+            })
+            
             .navigationBarTitle("CIn Juros")
             .scrollDismissesKeyboard(.immediately)
             .toolbarBackground(.roxinho, for: .navigationBar)
@@ -127,6 +138,41 @@ struct ContentView: View {
         .fontDesign(.rounded)
     }
     
+}
+
+
+//MARK: - Function
+extension ContentView {
+    func processaCalculo() {
+        guard let valorInicial = valorInicial, let aporteMensal = aporteMensal else {
+            print("Campo não preenchido")
+            failedInput = true
+            return
+        }
+        
+        guard valorInicial > 0 || aporteMensal > 0 else {
+            print("Pelo menos um campo tem que ser maior que zero")
+            failedInput = true
+            return
+        }
+        
+        // Calcula o número total de anos entre as datas selecionadas
+        let totalAnos = anoSelecionado2 - anoSelecionado1
+        
+        // Realiza o cálculo dos juros com base nos valores fornecidos e nos anos selecionados
+        let resultado = calcularJuros(valorInicial: valorInicial, aporteMensal: aporteMensal, totalAnos: totalAnos)
+        
+        print("Resultado do investimento: \(resultado)")
+    }
+    
+    // Função para calcular os juros com base nos valores fornecidos
+    func calcularJuros(valorInicial: Int, aporteMensal: Int, totalAnos: Int) -> Double {
+        
+        // Aqui você pode implementar a lógica para calcular os juros com base nos valores fornecidos
+        // Por exemplo, você pode usar as fórmulas de juros compostos que discutimos anteriormente nesta conversa
+        
+        // Por enquanto, apenas retornaremos um valor de exemplo
+        return 1  }
 }
 
 #Preview {
