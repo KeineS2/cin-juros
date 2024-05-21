@@ -7,40 +7,58 @@
 
 import Foundation
 
-enum investimento: String, CaseIterable {
+enum Investimento: String, CaseIterable {
     case selic = "Tesouro Selic"
     case prefixado = "Tesouro Prefixado"
     case ipca = "Tesouro IPCA+"
     case fundos = "Fundos Imobiliários"
     
     func calcularJuros(deValorInicial valorInicial: Double, eAporteMensal aporteMensal: Double, eTotalAnos totalAnos: Double, eTotalMeses totalMeses: Double) -> Double {
-        switch self {
-        case .selic:
-            let r = 0.05
-            let n = 262
-            let totalAnos = totalMeses / 12
-            let totalMeses = totalMeses
-            let valorFinal = valorInicial * pow((1 + r / Double(n)), (Double(n) * totalAnos))
-            return valorFinal
-        case .prefixado:
-            let r = 0.08
-            let n = 1 // Considerando um ano
-            let totalAnos = totalAnos
-            let valorFinal = valorInicial * pow((1 + r), (Double(n) * totalAnos))
-            return valorFinal
-        case .ipca:
-            let variacaoIpca = 0.05
-            let taxaJuros = 0.06
-            let valorCorrigido = valorInicial * (1 + variacaoIpca)
-            let totalAnos = totalAnos
-            let valorFinal = valorCorrigido * pow((1 + taxaJuros), Double(totalAnos))
-            return valorFinal
-        case .fundos:
-            let valorCota = 10.0
-            let jurosCota = 0.1
-            let totalAnos = totalAnos
-            let valorFinal = valorInicial * (1 + jurosCota) * Double(totalAnos) + aporteMensal
-            return valorFinal
+            let totalMeses = Int(totalAnos * 12) + Int(totalMeses) // Total de meses
+
+            switch self {
+            case .selic:
+                let taxaAnual = 0.05
+                let taxaMensal = pow(1 + taxaAnual, 1 / 12.0) - 1 // Taxa de juros mensal composta
+                return calcularJurosRecursivo(valorAtual: valorInicial, aporteMensal: aporteMensal, taxaMensal: taxaMensal, mesesRestantes: totalMeses)
+
+            case .prefixado:
+                let taxaAnual = 0.08
+                let taxaMensal = pow(1 + taxaAnual, 1 / 12.0) - 1 // Taxa de juros mensal composta
+                return calcularJurosRecursivo(valorAtual: valorInicial, aporteMensal: aporteMensal, taxaMensal: taxaMensal, mesesRestantes: totalMeses)
+
+            case .ipca:
+                let variacaoIpcaAnual = 0.05
+                let taxaJurosAnual = 0.06
+                let taxaMensal = pow(1 + variacaoIpcaAnual + taxaJurosAnual, 1 / 12.0) - 1 // Taxa de juros mensal composta
+                return calcularJurosRecursivo(valorAtual: valorInicial, aporteMensal: aporteMensal, taxaMensal: taxaMensal, mesesRestantes: totalMeses)
+
+            case .fundos:
+                let jurosCotaAnual = 0.1
+                let taxaMensal = pow(1 + jurosCotaAnual, 1 / 12.0) - 1 // Taxa de juros mensal composta
+                return calcularJurosRecursivo(valorAtual: valorInicial, aporteMensal: aporteMensal, taxaMensal: taxaMensal, mesesRestantes: totalMeses)
+            }
+        }
+
+    private func calcularJurosRecursivo(valorAtual: Double, aporteMensal: Double, taxaMensal: Double, mesesRestantes: Int) -> Double {
+            guard mesesRestantes > 0 else {
+                return valorAtual
+            }
+
+            // Calcular o novo valor com juros compostos para o próximo mês
+            let novoValor = valorAtual * (1 + taxaMensal) + aporteMensal
+
+            // Chamada recursiva para o próximo mês
+            return calcularJurosRecursivo(valorAtual: novoValor, aporteMensal: aporteMensal, taxaMensal: taxaMensal, mesesRestantes: mesesRestantes - 1)
         }
     }
-}
+
+    // Exemplo de uso
+//    let investimento = Investimento.selic
+//    let valorInicial: Double = 2000.0
+//    let aporteMensal: Double = 100.0
+//    let totalAnos: Double = 2.5
+//    let totalMeses: Double = 0
+//
+//    let valorFinal = investimento.calcularJuros(deValorInicial: valorInicial, eAporteMensal: aporteMensal, eTotalAnos: totalAnos, eTotalMeses: totalMeses)
+//    print("Valor Final: \(valorFinal)")
