@@ -12,9 +12,9 @@ struct ContentView: View {
     @State var tipoInvestimento: Bool?
     @State var aporteMensal: Double?
     @State var valorInicial: Double?
-    @State var totalAnos: Double?
+    @State var totalAnos: Int = 0
     @State var tempoAnos: Double?
-    @State var totalMeses: Double?
+    @State var totalMeses: Double = 0
     
     @State var investimentoSelecionado1 = Data.maio
     @State var investimentoSelecionado2 = Data.junho
@@ -22,11 +22,12 @@ struct ContentView: View {
     @State var anoSelecionado2: Int = 2024
     @State var failedInput = false
     @State var tipoDeInvestimento = Investimento.selic
-    @State var mostrarResultado = true
+    @State var mostrarResultado = false
+    @State var resultado = 0.0
     
-    @State private var resultado: Double = 0.0
     @State private var showingAlert = false
-    
+    @State private var alertaAtivo: AlertaAtivo?
+
     
     let tituloPreencherCampos = "Preencha os campos para calcular!"
     let campoMaiorQueZero = "Pelo menos um dos campos tem que ser maior que zero."
@@ -38,22 +39,52 @@ struct ContentView: View {
                 
                 Spacer()
                 
-                Text("Selecione o tipo de investimento:")
-                Picker("tipoInvestimento", selection: $tipoDeInvestimento){
-                    ForEach(Investimento.allCases, id:\.self) { data in
-                        Text(data.rawValue.capitalized)}
+                HStack{
+                    Text("Selecione o tipo de investimento:")
+                    Button(action: {
+                        // Ação que você deseja realizar quando o botão for pressionado
+                        alertaAtivo = .tipoInvestimento
+                    }) {
+                        Image("help")
+                            .resizable()
+                            .frame(width: 20, height: 20) // Ajuste o tamanho da imagem conforme necessário
+                    }
+                }
+                    Picker("tipoInvestimento", selection: $tipoDeInvestimento){
+                        ForEach(Investimento.allCases, id:\.self) { data in
+                            Text(data.rawValue.capitalized)}
                 }
                 
                 Spacer()
                 
-                Text("Qual o valor inicial?")
+                HStack {
+                    Text("Qual o valor inicial?")
+                    
+                    Button(action: {
+                        // Ação que você deseja realizar quando o botão for pressionado
+                        alertaAtivo = .valorInicial
+                    }) {
+                        Image("help")
+                            .resizable()
+                            .frame(width: 20, height: 20) // Ajuste o tamanho da imagem conforme necessário
+                    }
+                }
                 TextField("Digite o valor inicial",
                           value: $valorInicial,
                           format: .number)
                 
                 Spacer()
-                
-                Text("Qual o valor do aposte mensal?")
+                HStack{
+                    Text("Qual o valor do aposte mensal?")
+                    Button(action: {
+                        // Ação que você deseja realizar quando o botão for pressionado
+                        alertaAtivo = .aporteMensal
+                    }) {
+                        Image("help")
+                            .resizable()
+                            .frame(width: 20, height: 20) // Ajuste o tamanho da imagem conforme necessário
+                    }
+                }
                 TextField("Digite o valor do aporte mensal",
                           value: $aporteMensal,
                           format: .number)
@@ -93,6 +124,7 @@ struct ContentView: View {
                 
                 HStack{
                     Button("Apagar", action: {
+                        apagarCampos()
                         print("Botão foi clicado")
                     })
                     .frame(height: 40)
@@ -108,7 +140,7 @@ struct ContentView: View {
                     
                     Button("Calcular", action:  {
                         processaCalculo()
-                        showingAlert = true
+                        alertaAtivo = .mostrarResultado
                     })
                     
                     .frame(height: 41)
@@ -129,13 +161,15 @@ struct ContentView: View {
             .padding()
             .containerRelativeFrame(.vertical)
             //  .animation(.easeInOut.speed(0.5), value: result)
-            
+                        
             .alert(tituloPreencherCampos, isPresented: $failedInput, actions: {
                 Button("Ok", role: .cancel, action: {})
             })
             .alert(campoMaiorQueZero, isPresented: $failedInput, actions: {
                 Button("Ok", role: .cancel, action: {})
             })
+            
+
 //            .alert(isPresented: $showingAlert) {
 //                Alert(title: Text("Resultado"), message: Text("O resultado do seu investimento é de \(resultado, specifier: "%.2f")"), dismissButton: .default(Text("OK")))
 //            }
@@ -145,6 +179,41 @@ struct ContentView: View {
             .toolbarBackground(.roxinho, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
+            
+            
+            .alert(item: $alertaAtivo) { alertaAtivo in
+                switch alertaAtivo {
+                case .tipoInvestimento:
+                    return Alert(
+                        title: Text("Tipo de Investimento"),
+                        message: Text("Aqui você deve selecionar o tipo de investimento que você deseja investir"),
+                        dismissButton: .default(Text("OK"))
+                    )
+                case .valorInicial:
+                    return Alert(
+                        title: Text("Valor Inicial"),
+                        message: Text("Aqui você deve digitar o valor inicial que você deseja investir."),
+                        dismissButton: .default(Text("OK"))
+                    )
+                case .aporteMensal:
+                    return Alert(
+                        title: Text("Aporte Mensal"),
+                        message: Text("Aqui você deve digitar o valor do aporte mensal, ou seja, o valor que você deseja investir mensalmente."),
+                        dismissButton: .default(Text("OK"))
+                    )
+                case .mostrarResultado:
+                    return Alert(
+                        title: Text("Resultado do Investimento"),
+                        message: Text("""
+                                                                                  Investimento Selecionado: \(tipoDeInvestimento.rawValue)
+                                                                                  Aporte Mensal: \(String(format: "%.2f", aporteMensal ?? 0))
+                                                                                  Tempo: \(totalAnos, specifier: "%.0f") anos e \(totalMeses, specifier: "%.0f") meses
+                                                                                  Resultado: \(String(format: "%.2f", resultado))
+                                                                                  """),
+                        dismissButton: .default(Text("OK"))
+                    )
+                }
+            }
         }
         
         .fontDesign(.rounded)
@@ -155,6 +224,21 @@ struct ContentView: View {
 
 //MARK: - Function
 extension ContentView {
+    func apagarCampos() {
+            valorInicial = nil
+            aporteMensal = nil
+            anoSelecionado1 = 2024
+            anoSelecionado2 = 2024
+            investimentoSelecionado1 = .maio
+            investimentoSelecionado2 = .junho
+        }
+
+    
+    func calcularJuros(valorInicial: Double, taxaDeJuros: Double, totalAnos: Int) -> Double {
+        let juros = valorInicial * pow(1 + taxaDeJuros, Double(totalAnos))
+        return juros
+    }
+    
     func processaCalculo() {
         guard let valorInicial = valorInicial, let aporteMensal = aporteMensal else {
             print("Campo não preenchido")
@@ -167,13 +251,20 @@ extension ContentView {
             failedInput = true
             return
         }
+        
+       totalAnos = anoSelecionado2 - anoSelecionado1
+        
+        if investimentoSelecionado2.monthNumber < investimentoSelecionado1.monthNumber {
+            totalMeses = Double(12 - investimentoSelecionado1.monthNumber + investimentoSelecionado2.monthNumber)
+                totalAnos = anoSelecionado2 - anoSelecionado1 - 1 // Subtrai 1 ano se o mês final for anterior ao mês inicial
+            } else {
+                totalMeses = Double(investimentoSelecionado2.monthNumber - investimentoSelecionado1.monthNumber)
+                totalAnos = anoSelecionado2 - anoSelecionado1 // Calcula os anos normalmente
+            }
+        
+        resultado = tipoDeInvestimento.calcularJuros(deValorInicial: valorInicial, eAporteMensal: aporteMensal, eTotalAnos: Double(totalAnos), eTotalMeses: Double(totalMeses))
+      
         mostrarResultado = true
-        
-        let totalAnos = anoSelecionado2 - anoSelecionado1
-        
-        let totalMeses = investimentoSelecionado2.monthNumber - investimentoSelecionado1.monthNumber
-        
-        let resultado = tipoDeInvestimento.calcularJuros(deValorInicial: valorInicial, eAporteMensal: aporteMensal, eTotalAnos: Double(totalAnos), eTotalMeses: Double(totalMeses))
         
         print("Resultado do investimento: \(resultado)")
     }

@@ -13,6 +13,7 @@
 		4F163C102BF4D01C0054B29F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4F163C0F2BF4D01C0054B29F /* Preview Assets.xcassets */; };
 		4F163C172BF4DD0B0054B29F /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F163C162BF4DD0B0054B29F /* Data.swift */; };
 		4F163C192BF4E71C0054B29F /* tipo_investimento.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F163C182BF4E71C0054B29F /* tipo_investimento.swift */; };
+		4F163C1B2BFCC5BD0054B29F /* AlertaAtivo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F163C1A2BFCC5BD0054B29F /* AlertaAtivo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +24,7 @@
 		4F163C0F2BF4D01C0054B29F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		4F163C162BF4DD0B0054B29F /* Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		4F163C182BF4E71C0054B29F /* tipo_investimento.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = tipo_investimento.swift; sourceTree = "<group>"; };
+		4F163C1A2BFCC5BD0054B29F /* AlertaAtivo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertaAtivo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,10 +57,11 @@
 		4F163C072BF4D01B0054B29F /* CIn_Juros */ = {
 			isa = PBXGroup;
 			children = (
+				4F163C1A2BFCC5BD0054B29F /* AlertaAtivo.swift */,
 				4F163C182BF4E71C0054B29F /* tipo_investimento.swift */,
 				4F163C162BF4DD0B0054B29F /* Data.swift */,
-				4F163C082BF4D01B0054B29F /* CIn_JurosApp.swift */,
 				4F163C0A2BF4D01B0054B29F /* ContentView.swift */,
+				4F163C082BF4D01B0054B29F /* CIn_JurosApp.swift */,
 				4F163C0C2BF4D01C0054B29F /* Assets.xcassets */,
 				4F163C0E2BF4D01C0054B29F /* Preview Content */,
 			);
@@ -145,6 +148,7 @@
 			files = (
 				4F163C0B2BF4D01B0054B29F /* ContentView.swift in Sources */,
 				4F163C172BF4DD0B0054B29F /* Data.swift in Sources */,
+				4F163C1B2BFCC5BD0054B29F /* AlertaAtivo.swift in Sources */,
 				4F163C192BF4E71C0054B29F /* tipo_investimento.swift in Sources */,
 				4F163C092BF4D01B0054B29F /* CIn_JurosApp.swift in Sources */,
 			);
