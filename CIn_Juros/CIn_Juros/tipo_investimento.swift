@@ -53,12 +53,4 @@ enum Investimento: String, CaseIterable {
         }
     }
 
-    // Exemplo de uso
-//    let investimento = Investimento.selic
-//    let valorInicial: Double = 2000.0
-//    let aporteMensal: Double = 100.0
-//    let totalAnos: Double = 2.5
-//    let totalMeses: Double = 0
-//
-//    let valorFinal = investimento.calcularJuros(deValorInicial: valorInicial, eAporteMensal: aporteMensal, eTotalAnos: totalAnos, eTotalMeses: totalMeses)
-//    print("Valor Final: \(valorFinal)")
+

@@ -24,10 +24,13 @@ struct ContentView: View {
     @State var tipoDeInvestimento = Investimento.selic
     @State var mostrarResultado = false
     @State var resultado = 0.0
+    @State var anosResultado: Int?
+    @State var mesesResultado: Int?
+    
     
     @State private var showingAlert = false
     @State private var alertaAtivo: AlertaAtivo?
-
+    
     
     let tituloPreencherCampos = "Preencha os campos para calcular!"
     let campoMaiorQueZero = "Pelo menos um dos campos tem que ser maior que zero."
@@ -50,9 +53,9 @@ struct ContentView: View {
                             .frame(width: 20, height: 20) // Ajuste o tamanho da imagem conforme necessário
                     }
                 }
-                    Picker("tipoInvestimento", selection: $tipoDeInvestimento){
-                        ForEach(Investimento.allCases, id:\.self) { data in
-                            Text(data.rawValue.capitalized)}
+                Picker("tipoInvestimento", selection: $tipoDeInvestimento){
+                    ForEach(Investimento.allCases, id:\.self) { data in
+                        Text(data.rawValue.capitalized)}
                 }
                 
                 Spacer()
@@ -161,7 +164,7 @@ struct ContentView: View {
             .padding()
             .containerRelativeFrame(.vertical)
             //  .animation(.easeInOut.speed(0.5), value: result)
-                        
+            
             .alert(tituloPreencherCampos, isPresented: $failedInput, actions: {
                 Button("Ok", role: .cancel, action: {})
             })
@@ -169,10 +172,10 @@ struct ContentView: View {
                 Button("Ok", role: .cancel, action: {})
             })
             
-
-//            .alert(isPresented: $showingAlert) {
-//                Alert(title: Text("Resultado"), message: Text("O resultado do seu investimento é de \(resultado, specifier: "%.2f")"), dismissButton: .default(Text("OK")))
-//            }
+            
+            //            .alert(isPresented: $showingAlert) {
+            //                Alert(title: Text("Resultado"), message: Text("O resultado do seu investimento é de \(resultado, specifier: "%.2f")"), dismissButton: .default(Text("OK")))
+            //            }
             
             .navigationBarTitle("CIn Juros")
             .scrollDismissesKeyboard(.immediately)
@@ -204,10 +207,12 @@ struct ContentView: View {
                 case .mostrarResultado:
                     return Alert(
                         title: Text("Resultado do Investimento"),
-                        message: Text("""
+                        message:
+                            Text("""
                                                                                   Investimento Selecionado: \(tipoDeInvestimento.rawValue)
+                                                                                  Valor Inicial: \(String(format: "%.2f", valorInicial ?? 0))
                                                                                   Aporte Mensal: \(String(format: "%.2f", aporteMensal ?? 0))
-                                                                                  Tempo: \(totalAnos, specifier: "%.0f") anos e \(totalMeses, specifier: "%.0f") meses
+                                                                                  Tempo: \(anosResultado ?? 0) anos e \(mesesResultado ?? 0) meses
                                                                                   Resultado: \(String(format: "%.2f", resultado))
                                                                                   """),
                         dismissButton: .default(Text("OK"))
@@ -224,15 +229,16 @@ struct ContentView: View {
 
 //MARK: - Function
 extension ContentView {
+    
     func apagarCampos() {
-            valorInicial = nil
-            aporteMensal = nil
-            anoSelecionado1 = 2024
-            anoSelecionado2 = 2024
-            investimentoSelecionado1 = .maio
-            investimentoSelecionado2 = .junho
-        }
-
+        valorInicial = nil
+        aporteMensal = nil
+        anoSelecionado1 = 2024
+        anoSelecionado2 = 2024
+        investimentoSelecionado1 = .maio
+        investimentoSelecionado2 = .junho
+    }
+    
     
     func calcularJuros(valorInicial: Double, taxaDeJuros: Double, totalAnos: Int) -> Double {
         let juros = valorInicial * pow(1 + taxaDeJuros, Double(totalAnos))
@@ -240,6 +246,7 @@ extension ContentView {
     }
     
     func processaCalculo() {
+        
         guard let valorInicial = valorInicial, let aporteMensal = aporteMensal else {
             print("Campo não preenchido")
             failedInput = true
@@ -252,19 +259,34 @@ extension ContentView {
             return
         }
         
-       totalAnos = anoSelecionado2 - anoSelecionado1
+        //        totalAnos = anoSelecionado2 - anoSelecionado1
+        //
+        //        if investimentoSelecionado2.monthNumber < investimentoSelecionado1.monthNumber {
+        //            totalMeses = Double(12 - investimentoSelecionado1.monthNumber + investimentoSelecionado2.monthNumber)
+        //            totalAnos = anoSelecionado2 - anoSelecionado1 - 1 // Subtrai 1 ano se o mês final for anterior ao mês inicial
+        //        } else {
+        //            totalMeses = Double(investimentoSelecionado2.monthNumber - investimentoSelecionado1.monthNumber)
+        //            totalAnos = anoSelecionado2 - anoSelecionado1 // Calcula os anos normalmente
+        //        }
         
-        if investimentoSelecionado2.monthNumber < investimentoSelecionado1.monthNumber {
-            totalMeses = Double(12 - investimentoSelecionado1.monthNumber + investimentoSelecionado2.monthNumber)
-                totalAnos = anoSelecionado2 - anoSelecionado1 - 1 // Subtrai 1 ano se o mês final for anterior ao mês inicial
-            } else {
-                totalMeses = Double(investimentoSelecionado2.monthNumber - investimentoSelecionado1.monthNumber)
-                totalAnos = anoSelecionado2 - anoSelecionado1 // Calcula os anos normalmente
-            }
         
-        resultado = tipoDeInvestimento.calcularJuros(deValorInicial: valorInicial, eAporteMensal: aporteMensal, eTotalAnos: Double(totalAnos), eTotalMeses: Double(totalMeses))
-      
+        let calculo1 = anoSelecionado1 * 12 + investimentoSelecionado1.monthNumber
+        let calculo2 = anoSelecionado2 * 12 + investimentoSelecionado2.monthNumber
+        
+        // Cálculo da diferença total de meses
+        let totalMeses = calculo2 % calculo1
+        
+        // Convertendo meses para anos e meses
+        anosResultado = totalMeses / 12
+        mesesResultado = totalMeses % 12
+        
+        
+        // Cálculo do resultado
+        resultado = tipoDeInvestimento.calcularJuros(deValorInicial: valorInicial, eAporteMensal: aporteMensal, eTotalAnos: Double(anosResultado!), eTotalMeses: Double(mesesResultado!))
+        
+        
         mostrarResultado = true
+
         
         print("Resultado do investimento: \(resultado)")
     }
