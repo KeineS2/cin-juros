@@ -215,6 +215,7 @@ struct ContentView: View {
                                                                                   Tempo: \(anosResultado ?? 0) anos e \(mesesResultado ?? 0) meses
                                                                                   Resultado: \(String(format: "%.2f", resultado))
                                                                                   """),
+
                         dismissButton: .default(Text("OK"))
                     )
                 }
@@ -231,6 +232,7 @@ struct ContentView: View {
 extension ContentView {
     
     func apagarCampos() {
+        tipoDeInvestimento = .selic
         valorInicial = nil
         aporteMensal = nil
         anoSelecionado1 = 2024
@@ -259,29 +261,15 @@ extension ContentView {
             return
         }
         
-        //        totalAnos = anoSelecionado2 - anoSelecionado1
-        //
-        //        if investimentoSelecionado2.monthNumber < investimentoSelecionado1.monthNumber {
-        //            totalMeses = Double(12 - investimentoSelecionado1.monthNumber + investimentoSelecionado2.monthNumber)
-        //            totalAnos = anoSelecionado2 - anoSelecionado1 - 1 // Subtrai 1 ano se o mês final for anterior ao mês inicial
-        //        } else {
-        //            totalMeses = Double(investimentoSelecionado2.monthNumber - investimentoSelecionado1.monthNumber)
-        //            totalAnos = anoSelecionado2 - anoSelecionado1 // Calcula os anos normalmente
-        //        }
-        
-        
         let calculo1 = anoSelecionado1 * 12 + investimentoSelecionado1.monthNumber
         let calculo2 = anoSelecionado2 * 12 + investimentoSelecionado2.monthNumber
         
-        // Cálculo da diferença total de meses
         let totalMeses = calculo2 % calculo1
         
-        // Convertendo meses para anos e meses
         anosResultado = totalMeses / 12
         mesesResultado = totalMeses % 12
         
         
-        // Cálculo do resultado
         resultado = tipoDeInvestimento.calcularJuros(deValorInicial: valorInicial, eAporteMensal: aporteMensal, eTotalAnos: Double(anosResultado!), eTotalMeses: Double(mesesResultado!))
         
         
